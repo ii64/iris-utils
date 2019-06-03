@@ -89,8 +89,11 @@ var userEventData = map[string][]eventData{}
 func main() {
 	lp.DEBUG = true
 	lpMgr, err := lp.NewManager(lp.Options{
-		MaxConnection: 5, // lp.UNLIMITED_CONN,
-		TimeoutSeconds: 20, //lp.UNSET,
+		// IDK WHY THIS BUGGY
+		//MaxConnection: 5, // lp.UNLIMITED_CONN,
+		//TimeoutSeconds: 20, //lp.UNSET,
+		MaxConnection: lp.UNLIMITED_CONN,
+		TimeoutSeconds: lp.UNSET,
 	})
 	if err != nil {
 		panic(err)
@@ -153,7 +156,7 @@ func main() {
 		addToContainer("<b>Latest event offset:"+(xhr.response)+"</b><br />")
 	})
 	function fetchEventLongPolling(offset){
-		get("/event/"+username+"/"+offset+"/1", function(xhr){
+		get("/event/"+username+"/"+offset+"/1", function(xhr){			
 			addToContainer("<b>Fetching offset "+offset+" with limit 1:</b><br />")
 			try{
 				r = JSON.parse(xhr.response)
@@ -161,10 +164,11 @@ func main() {
 					addToContainer("<b>Event:&nbsp;</b>" + JSON.stringify(r.events[i]) + "<br />")
 				}
 				addToContainer("<b>Next event offset revision: </b>" + r.nextOffset + "<br />")
+				offset = r.nextOffset
 			}catch(e){
-				addToContainer("<b>Error: "+xhr.response+"</b>")
+				addToContainer("<b>Error: "+xhr.response+"</b><br />")
 			}
-			fetchEventLongPolling(r.nextOffset)
+			fetchEventLongPolling(offset)
 		})
 	}
 	addToContainer("<b>App ok. fetching now.</b><br />")
@@ -274,7 +278,7 @@ func main() {
 		}
 
 		// next token
-		rs.NextOffset = lastOffset
+		rs.NextOffset = lastOffset+1
 		ctx.JSON(rs)
 	})
 
