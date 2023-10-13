@@ -3,8 +3,8 @@ import (
 	"time"
 	"log"
 	"fmt"
-	"github.com/kataras/iris"
-	lp "github.com/anysz/iris-utils/longpoll"
+	"github.com/kataras/iris/v12"
+	lp "asd/longpoll"
 )
 type eventMsg struct {
 	Id int64 `json:"id,omitempty"`
